@@ -2,6 +2,18 @@
 
 A simple Qt (PySide6) desktop app to test UDP and TCP ports in multiplayer/networked scenarios.
 
+### Server tab
+
+The Server tab lets you run a TCP server and a UDP listener with optional echo. Use this to receive data and validate open ports locally or across the network.
+
+![Server tab](./Server.png)
+
+### Client tab
+
+The Client tab lets you target a host and ports, send standard or custom messages (optionally Base64-encoded), and run quick port tests (TCP connect and UDP ping).
+
+![Client tab](./Client.png)
+
 ## Features
 
 - Server tab
@@ -79,20 +91,6 @@ The main window has two tabs and a log pane at the bottom.
     - Send UDP: sends a datagram; no reply is expected by default.
     - Test TCP Port: attempts a TCP connect with timeout to report OPEN/CLOSED.
     - UDP Ping Test: sends "ping" and waits briefly for a reply. Use the Server tab's UDP Listener with Echo enabled (or another responder) on the target to receive a reply.
-
-## Screenshots
-
-### Server tab
-
-The Server tab lets you run a TCP server and a UDP listener with optional echo. Use this to receive data and validate open ports locally or across the network.
-
-![Server tab](./Server.png)
-
-### Client tab
-
-The Client tab lets you target a host and ports, send standard or custom messages (optionally Base64-encoded), and run quick port tests (TCP connect and UDP ping).
-
-![Client tab](./Client.png)
 
 ## Multiplayer/LAN usage
 
