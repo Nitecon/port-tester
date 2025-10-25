@@ -1,6 +1,23 @@
 # UDP/TCP Port Tester GUI
 
+<!-- Badges -->
+[
+![CI](https://github.com/Nitecon/port-tester/actions/workflows/ci.yml/badge.svg)
+](https://github.com/Nitecon/port-tester/actions/workflows/ci.yml)
+[
+![Release](https://img.shields.io/github/v/release/Nitecon/port-tester?display_name=tag)
+](https://github.com/Nitecon/port-tester/releases)
+![Downloads](https://img.shields.io/github/downloads/Nitecon/port-tester/total)
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+![Platforms](https://img.shields.io/badge/Platforms-macOS%20%7C%20Linux%20%7C%20Windows-informational)
+[![License](https://img.shields.io/github/license/Nitecon/port-tester)](./LICENSE)
+
 A simple Qt (PySide6) desktop app to test UDP and TCP ports in multiplayer/networked scenarios.
+
+## Quick links
+
+- **Latest Releases**: https://github.com/Nitecon/port-tester/releases
+- **CI Runs**: https://github.com/Nitecon/port-tester/actions
 
 ### Server tab
 
