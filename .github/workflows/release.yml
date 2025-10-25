@@ -4,6 +4,10 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -43,11 +47,35 @@ jobs:
             echo "BIN=dist/port-tester" >> $GITHUB_ENV
           fi
 
+      - name: Package artifact (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          ARCHIVE="dist/port-tester-macOS.zip"
+          (cd dist && zip -r port-tester-macOS.zip port-tester.app)
+          echo "ARCHIVE=$ARCHIVE" >> $GITHUB_ENV
+
+      - name: Package artifact (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          ARCHIVE="dist/port-tester-Linux.tar.gz"
+          tar -czf "$ARCHIVE" -C dist port-tester
+          echo "ARCHIVE=$ARCHIVE" >> $GITHUB_ENV
+
+      - name: Package artifact (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $archive = "dist/port-tester-Windows.zip"
+          Compress-Archive -Path dist/port-tester.exe -DestinationPath $archive -Force
+          echo "ARCHIVE=$archive" | Out-File -FilePath $env:GITHUB_ENV -Append
+
       - name: Archive artifact
         uses: actions/upload-artifact@v4
         with:
           name: port-tester-${{ runner.os }}
-          path: ${{ env.BIN }}
+          path: ${{ env.ARCHIVE }}
 
   release:
     name: Create GitHub Release
@@ -65,8 +93,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            artifacts/port-tester-Linux/*
-            artifacts/port-tester-macOS/*
-            artifacts/port-tester-Windows/*
+            artifacts/port-tester-Linux/*.tar.gz
+            artifacts/port-tester-macOS/*.zip
+            artifacts/port-tester-Windows/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
