@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: port-tester
+  labels:
+    app: port-tester
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: port-tester
+  template:
+    metadata:
+      labels:
+        app: port-tester
+    spec:
+      containers:
+        - name: port-tester
+          image: nitecon/port-tester:latest
+          args:
+            - "--tcp-port"
+            - "5000"
+            - "--udp-port"
+            - "5001"
+          ports:
+            - name: tcp-echo
+              containerPort: 5000
+              protocol: TCP
+            - name: udp-echo
+              containerPort: 5001
+              protocol: UDP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: port-tester
+  labels:
+    app: port-tester
+spec:
+  selector:
+    app: port-tester
+  ports:
+    - name: tcp-echo
+      port: 5000
+      targetPort: 5000
+      protocol: TCP
+    - name: udp-echo
+      port: 5001
+      targetPort: 5001
+      protocol: UDP
+  type: LoadBalancer

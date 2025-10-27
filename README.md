@@ -80,6 +80,103 @@ python -m pip install -r requirements.txt
 python app.py
 ```
 
+## Run the headless echo server with Docker
+
+Prebuilt images are published to Docker Hub as `nitecon/port-tester`.
+
+- TCP echo only (port 5000):
+
+```bash
+docker run --rm -p 5000:5000 \
+  nitecon/port-tester:latest --tcp-port 5000 --udp-port 0
+```
+
+- UDP echo only (port 5001):
+
+```bash
+docker run --rm -p 5001:5001/udp \
+  nitecon/port-tester:latest --tcp-port 0 --udp-port 5001
+```
+
+- Both TCP (5000) and UDP (5001):
+
+```bash
+docker run --rm -p 5000:5000 -p 5001:5001/udp \
+  nitecon/port-tester:latest --tcp-port 5000 --udp-port 5001
+```
+
+Environment notes:
+- The container runs a simple echo server. Logs are printed to stdout.
+- Override ports with `--tcp-port` and/or `--udp-port` (> 0 enables each protocol).
+
+## Kubernetes: single Pod deployment
+
+Below is a minimal Deployment and Service you can apply to run the echo server in a cluster.
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: port-tester
+  labels:
+    app: port-tester
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: port-tester
+  template:
+    metadata:
+      labels:
+        app: port-tester
+    spec:
+      containers:
+        - name: port-tester
+          image: nitecon/port-tester:latest
+          args:
+            - "--tcp-port"
+            - "5000"
+            - "--udp-port"
+            - "5001"
+          ports:
+            - name: tcp-echo
+              containerPort: 5000
+              protocol: TCP
+            - name: udp-echo
+              containerPort: 5001
+              protocol: UDP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: port-tester
+  labels:
+    app: port-tester
+spec:
+  selector:
+    app: port-tester
+  ports:
+    - name: tcp-echo
+      port: 5000
+      targetPort: 5000
+      protocol: TCP
+    - name: udp-echo
+      port: 5001
+      targetPort: 5001
+      protocol: UDP
+  type: LoadBalancer
+```
+
+Apply:
+
+```bash
+kubectl apply -f port-tester.yaml
+```
+
+Notes:
+- For external access, change the Service `type` to `NodePort` or set up an Ingress/LoadBalancer suitable for your cluster.
+- You can disable either protocol by setting `--tcp-port 0` or `--udp-port 0` in the container args.
+
 ## How the UI works
 
 The main window has two tabs and a log pane at the bottom.
